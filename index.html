@@ -65,8 +65,9 @@ async function checkAccess() {
     }
 
   } catch (error) {
-    status.innerText = "Verification failed. Please try again.";
-  }
+    console.error(error);
+    status.innerText = "Verification failed: " + (error.shortMessage || error.message || "Unknown error");
+}
 }
 </script>
 
