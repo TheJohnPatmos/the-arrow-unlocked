@@ -111,6 +111,10 @@ walletAddress,
 tokenId
 );
 
+status.innerText =
+"Wallet: " + walletAddress +
+" | Token Balance: " + balance;
+
 if (Number(balance) > 0) {
 
 status.innerText = "Verified.";
