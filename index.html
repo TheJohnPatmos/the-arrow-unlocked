@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The Arrow Unlocked</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 40px; background: #111; color: white; }
+    button { padding: 15px 25px; font-size: 18px; border-radius: 8px; cursor: pointer; }
+    #access { margin-top: 30px; display: none; }
+  </style>
+</head>
+<body>
+
+  <h1>🔒 The Arrow Unlocked</h1>
+  <p>Connect the wallet holding The God Spell #7 to unlock the manuscript.</p>
+
+  <button onclick="checkAccess()">Connect Wallet</button>
+
+  <p id="status"></p>
+
+  <div id="access">
+    <h2>Access Granted</h2>
+    <p>You own The God Spell #7.</p>
+    <p><a href="PASTE-YOUR-MANUSCRIPT-LINK-HERE" target="_blank" style="color:#9b7cff;">Read The Full Manuscript</a></p>
+  </div>
+
+<script>
+const contractAddress = "0xD0CB48Bab6095377BF4c2022fBB1Ef8A553EdA75";
+const tokenId = 7;
+
+const abi = [
+  "function balanceOf(address account, uint256 id) view returns (uint256)"
+];
+
+async function checkAccess() {
+  const status = document.getElementById("status");
+  const access = document.getElementById("access");
+
+  if (!window.ethereum) {
+    status.innerText = "MetaMask is required to verify ownership.";
+    return;
+  }
+
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+
+    const network = await provider.getNetwork();
+    if (Number(network.chainId) !== 1) {
+      status.innerText = "Please switch MetaMask to Ethereum Mainnet.";
+      return;
+    }
+
+    const contract = new ethers.Contract(contractAddress, abi, provider);
+    const balance = await contract.balanceOf(address, tokenId);
+
+    if (balance > 0n) {
+      status.innerText = "Verified.";
+      access.style.display = "block";
+    } else {
+      status.innerText = "Access denied. This wallet does not hold The God Spell #7.";
+      access.style.display = "none";
+    }
+
+  } catch (error) {
+    status.innerText = "Verification failed. Please try again.";
+  }
+}
+</script>
+
+</body>
+</html>
